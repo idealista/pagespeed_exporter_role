@@ -8,6 +8,7 @@ services:
 install:
   - pip install pipenv
   - pipenv sync
+  - ansible-galaxy install -r requirements.yml -f
 env:
   jobs:
     - MOLECULE_DISTRO=debian:jessie-slim
