@@ -1,0 +1,17 @@
+---
+
+galaxy_info:
+  role_name: pagespeed_exporter_role
+  author: idealista
+  company: Idealista S.A.U.
+  description: Pagespeed Exporter Role
+  min_ansible_version: 2.9.7
+  license: Apache 2.0
+  galaxy-tags:
+    - monitoring
+  platforms:
+    - name: Debian
+      versions:
+        - jessie
+        - stretch
+        - buster

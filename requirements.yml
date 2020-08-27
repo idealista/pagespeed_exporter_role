@@ -1,0 +1,4 @@
+---
+- src: idealista.golang_role
+  version: 2.5.0
+  name: golang

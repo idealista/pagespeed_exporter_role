@@ -1,0 +1,49 @@
+---
+
+file:
+  {{ pagespeed_exporter_bin_path }}:
+  
+    owner: {{ pagespeed_exporter_user }}
+    group: {{ pagespeed_exporter_group }}
+    exists: true
+    filetype: directory
+
+{% if pagespeed_exporter_log_path is defined %}
+  {{ pagespeed_exporter_log_path }}:
+    owner: {{ pagespeed_exporter_user }}
+    group: {{ pagespeed_exporter_group }}
+    exists: true
+    filetype: directory
+  {{ pagespeed_exporter_log_file }}:
+    owner: root
+    group: root
+    exists: true
+    filetype: file
+{% endif %}
+
+service:
+  pagespeed_exporter:
+    enabled: true
+    running: true 
+
+user:
+  {{ pagespeed_exporter_user }}:
+    exists: true
+    groups:
+      - {{ pagespeed_exporter_group }}
+    shell: /usr/sbin/nologin
+group:
+  {{ pagespeed_exporter_group }}:
+    exists: true
+
+port:
+  tcp6:{{ pagespeed_exporter_listener }}:
+    listening: true
+
+http:
+  http://localhost:{{ pagespeed_exporter_listener }}:
+    status: 200
+  http://localhost:{{ pagespeed_exporter_listener }}{{pagespeed_metrics_path}}:
+    status: 200
+    timeout: 60000
+

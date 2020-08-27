@@ -1,0 +1,16 @@
+---
+
+- name: PAGESPEED_EXPORTER | Install
+  include: install.yml
+  tags:
+    - pagespeed_exporter_install
+
+- name: PAGESPEED_EXPORTER | Configure
+  include: config.yml
+  tags:
+    - pagespeed_exporter_configure
+
+- name: PAGESPEED_EXPORTER | Service
+  include: service.yml
+  tags:
+    - pagespeed_exporter_service

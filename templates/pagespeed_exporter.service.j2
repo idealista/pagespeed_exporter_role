@@ -1,0 +1,23 @@
+{{ ansible_managed | comment }}
+[Unit]
+Description=pagespeed exporter
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+PrivateTmp={{ private_tmp_service }}
+User={{ pagespeed_exporter_user }}
+Group={{ pagespeed_exporter_group }}
+RuntimeDirectory=pagespeed_exporter
+LimitNOFILE={{ pagespeed_exporter_max_files }}
+
+ExecStart={{ pagespeed_exporter_bin_path }}/{{ pagespeed_exporter_exec_name }} {% for option in pagespeed_exporter_options %}{% if option %}-{{ option }} {% endif %}{% endfor %}
+
+StandardOutput={{ pagespeed_exporter_log_output }}
+StandardError={{ pagespeed_exporter_log_output }}
+ExecReload=/bin/kill -HUP $MAINPID
+KillSignal=SIGTERM
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

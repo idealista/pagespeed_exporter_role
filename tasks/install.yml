@@ -1,0 +1,94 @@
+---
+- name: PAGESPEED_EXPORTER | Check if golang is installed
+  command: "go version"
+  register: go_check
+  changed_when: false
+  ignore_errors: true
+
+- name: PAGESPEED_EXPORTER | Install golang
+  include_role:
+    name: golang
+  when: go_check is failed
+
+- name: PAGESPEED_EXPORTER | Create symbolic link to go binary
+  file:
+    src: "{{ golang_install_dir }}/bin/go"
+    dest: "/usr/local/bin/go"
+    state: link
+
+- name: PAGESPEED_EXPORTER | Ensure pagespeed_exporter group
+  group:
+    name: "{{ pagespeed_exporter_group }}"
+    system: yes
+    state: present
+
+- name: PAGESPEED_EXPORTER | Ensure pagespeed_exporter user
+  user:
+    name: "{{ pagespeed_exporter_user }}"
+    group: "{{ pagespeed_exporter_group }}"
+    system: yes
+    shell: /usr/sbin/nologin
+    createhome: no
+
+- name: PAGESPEED_EXPORTER | Ensure skeleton paths
+  file:
+    dest: "{{ item }}"
+
+    owner: "{{ pagespeed_exporter_user }}"
+    group: "{{ pagespeed_exporter_group }}"
+
+    state: directory
+  with_items:
+    - "{{ pagespeed_exporter_skeleton_paths }}"
+
+- name: PAGESPEED_EXPORTER | Ensure skeleton log paths
+  file:
+    dest: "{{ pagespeed_exporter_log_path }}"
+
+    owner: "{{ pagespeed_exporter_user }}"
+    group: "{{ pagespeed_exporter_group }}"
+
+    state: directory
+  when: pagespeed_exporter_log_path is defined
+
+- name: PAGESPEED_EXPORTER | Check pagespeed_exporter is installed
+  command: "pagespeed_exporter --help"
+  register: pagespeed_exporter_check
+  changed_when: false
+  ignore_errors: true
+
+- name: PAGESPEED_EXPORTER | Download package
+  get_url:
+    url: "{{ pagespeed_exporter_url }}/{{ pagespeed_exporter_package }}"
+    dest: "{{ pagespeed_exporter_package_path }}"
+  when: pagespeed_exporter_force_reinstall or pagespeed_exporter_check is failed
+
+- name: PAGESPEED_EXPORTER | Extract downloaded package
+  unarchive:
+    src: "{{ pagespeed_exporter_package_path }}/pagespeed_exporter-{{ pagespeed_exporter_package }}"
+    dest: "{{ pagespeed_exporter_package_path }}"
+    remote_src: True
+  when: pagespeed_exporter_force_reinstall or pagespeed_exporter_check is failed
+
+- name: PAGESPEED_EXPORTER | Build pagespeed_exporter
+  command: go build -ldflags "-X main.Version={{ pagespeed_exporter_version }}" -o {{ pagespeed_exporter_exec_name }} pagespeed_exporter.go
+  when: pagespeed_exporter_force_reinstall or pagespeed_exporter_check is failed
+  args:
+    chdir: "{{ pagespeed_exporter_package_path }}/pagespeed_exporter-{{ pagespeed_exporter_version }}"
+
+- name: PAGESPEED_EXPORTER | Copy binary
+  copy:
+    src: "{{ pagespeed_exporter_package_path }}/pagespeed_exporter-{{ pagespeed_exporter_version }}/{{ pagespeed_exporter_exec_name }}"
+    dest: "{{ pagespeed_exporter_bin_path }}/{{ pagespeed_exporter_exec_name }}"
+    owner: "{{ pagespeed_exporter_user }}"
+    group: "{{ pagespeed_exporter_group }}"
+    remote_src: True
+    mode: "0755"
+  when: pagespeed_exporter_force_reinstall or pagespeed_exporter_check is failed
+
+- name: PAGESPEED_EXPORTER | Link binary
+  file:
+    src: "{{ pagespeed_exporter_bin_path }}/{{ pagespeed_exporter_exec_name }}"
+    dest: "/usr/bin/{{ pagespeed_exporter_exec_name }}"
+    state: link
+  when: pagespeed_exporter_force_reinstall or pagespeed_exporter_check is failed

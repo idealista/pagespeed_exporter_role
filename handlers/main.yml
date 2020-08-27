@@ -1,0 +1,7 @@
+---
+
+- name: restart pagespeed_exporter
+  systemd:
+    name: pagespeed_exporter
+    state: restarted
+  when: pagespeed_exporter_service_state != 'stopped'

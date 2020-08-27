@@ -1,0 +1,5 @@
+---
+- name: Converge
+  hosts: pagespeed_exporter_group
+  roles:
+    - role: pagespeed_exporter_role

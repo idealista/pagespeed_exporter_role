@@ -1,0 +1,69 @@
+---
+
+## General
+# Version
+pagespeed_exporter_version: 2.1.2
+pagespeed_exporter_release_system: linux_amd64
+
+# Package URL
+pagespeed_exporter_package: "{{ pagespeed_exporter_version }}.tar.gz"
+pagespeed_exporter_url: "https://github.com/foomo/pagespeed_exporter/archive"
+
+# Package paths
+pagespeed_exporter_download_path: /usr/src
+pagespeed_exporter_package_path: "/opt/pagespeed_exporter"
+pagespeed_exporter_src_bin: "{{ pagespeed_exporter_download_path }}/{{ pagespeed_exporter_version }}/bin/{{ pagespeed_exporter_exec_name }}"
+
+# Set true to force the download and installation of the binary
+pagespeed_exporter_force_reinstall: false
+
+# Installation path
+pagespeed_exporter_root_path: /opt/pagespeed_exporter
+pagespeed_exporter_bin_path: "{{ pagespeed_exporter_root_path }}/bin"
+pagespeed_exporter_skeleton_paths: 
+  - "{{ pagespeed_exporter_bin_path }}"
+pagespeed_exporter_exec_name: pagespeed_exporter
+
+## Service options
+pagespeed_metrics_path: /metrics
+
+# Owner
+pagespeed_exporter_user: pagespeed_exporter
+pagespeed_exporter_group: pagespeed_exporter
+
+# Maximum number of files limit
+pagespeed_exporter_max_files: 32768
+
+# Start on boot
+pagespeed_exporter_service_enabled: True
+# Current state: started, stopped
+pagespeed_exporter_service_state: started
+
+# Logs
+# If wanted to output the logs to a file define the following variable
+# More information at https://www.freedesktop.org/software/systemd/man/systemd.exec.html#StandardOutput=
+pagespeed_exporter_log_path: /var/log/prometheus_exporter
+pagespeed_exporter_log_file: "{{ pagespeed_exporter_log_path}}/pagespeed_exporter.log"
+pagespeed_exporter_log_output: "{% if pagespeed_exporter_log_file is defined %} file:{{ pagespeed_exporter_log_file }} {% else %} journal {% endif %}"
+
+# Flags
+pagespeed_exporter_listener: 9271 # Sets the listener address for the exporters
+pagespeed_exporter_targets: https://google.com # Comma separated list of targets to measure, two targets or more requires an API key.
+# pagespeed_exporter_api_key: example_value_2 # Sets the google API key used for pagespeed
+# pagespeed_exporter_parallel: false # sets the execution of targets to be parallel
+# pagespeed_exporter_push_gateway_url: https://pushgateway.com #sets the pushgateway url to send the metrics
+# pagespeed_exporter_push_gateway_job: pushgatewayjob #sets the pushgateway job name
+
+pagespeed_exporter_options:  
+  - "targets {{ pagespeed_exporter_targets}}"
+  - "listener :{{ pagespeed_exporter_listener }}"
+  # - "api-key {{ pagespeed_exporter_api_key }}"
+  # - "parallel {{ pagespeed_exporter_parallel }}"
+  # - "pushGateway-url {{ pagespeed_exporter }}"
+  # - "pushGateway-job {{ pagespeed_exporter }}"
+
+private_tmp_service: no
+
+# GoLang
+golang_version: '1.15'
+golang_install_dir: '/opt/go/{{ golang_version }}'
