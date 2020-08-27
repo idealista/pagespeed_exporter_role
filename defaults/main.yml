@@ -42,9 +42,12 @@ pagespeed_exporter_service_state: started
 # Logs
 # If wanted to output the logs to a file define the following variable
 # More information at https://www.freedesktop.org/software/systemd/man/systemd.exec.html#StandardOutput=
-pagespeed_exporter_log_path: /var/log/prometheus_exporter
-pagespeed_exporter_log_file: "{{ pagespeed_exporter_log_path}}/pagespeed_exporter.log"
-pagespeed_exporter_log_output: "{% if pagespeed_exporter_log_file is defined %} file:{{ pagespeed_exporter_log_file }} {% else %} journal {% endif %}"
+# pagespeed_exporter_log_path: /var/log/pagespeed_exporter
+# pagespeed_exporter_log_file: pagespeed_exporter.log
+pagespeed_exporter_log_output: journal
+# If you need output to a file, you can use file:{{ pagespeed_exporter_log_path }}/{{ node_exporter_log_file }}, append:..., rsyslog and other
+# options in Debian 10 (see https://www.freedesktop.org/software/systemd/man/systemd.exec.html)
+
 
 # Flags
 pagespeed_exporter_listener: 9271 # Sets the listener address for the exporters

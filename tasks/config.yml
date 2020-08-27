@@ -1,5 +1,6 @@
 ---
-- name: pagespeed_exporter | Copy logrotate config
+- name: PAGESPEED_EXPORTER | Copy logrotate config
   template:
     src: logrotate.j2
     dest: /etc/logrotate.d/pagespeed_exporter
+  when: pagespeed_exporter_log_path is defined
