@@ -14,7 +14,7 @@ file:
     group: {{ pagespeed_exporter_group }}
     exists: true
     filetype: directory
-  {{ pagespeed_exporter_log_file }}:
+  {{ pagespeed_exporter_log_path }}/{{ pagespeed_exporter_log_file }}:
     owner: root
     group: root
     exists: true
